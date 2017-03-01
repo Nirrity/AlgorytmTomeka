@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <random>
+#include <algorithm>
 
 
 bool wczytajDaneZPliku(std::vector<std::vector<double>>& tempDane, 
@@ -69,11 +69,13 @@ bool wczytajDaneZPliku(std::vector<std::vector<double>>& tempDane,
 
 void wyswietlDane(std::vector<std::vector<double>>& tempDane)
 {
-	for(auto& wiersze: tempDane){
+	for(auto& wiersze: tempDane)
+	{
 		for (auto& kolumny : wiersze)
 		{
 			std::cout<<kolumny<<"  ";
-		}std::cout<<std::endl;
+		}
+		std::cout<<std::endl;
 	}
 }
 
@@ -97,9 +99,11 @@ std::vector<double> liczSrodekCiezkosci(std::vector<std::vector<double>> tmpDane
 	std::vector<double> wynik(tmpDane[0].size()-1,0);
 	int rozmiar = tmpDane.size();
 
-	for (int i = 1; i < tmpDane[0].size(); ++i){
-		for (int j = 0; j < rozmiar; ++j){
-		wynik[i] += tmpDane[j][i];
+	for (int i = 1; i < tmpDane[0].size(); ++i)
+	{
+		for (int j = 0; j < rozmiar; ++j)
+		{
+			wynik[i] += tmpDane[j][i];
 		}
 		wynik[i] /= rozmiar;
 	}
@@ -126,14 +130,49 @@ std::vector<std::vector<double>> sortowanieElementow(std::vector<std::vector<dou
 
 std::vector<std::vector<double>> algorytmHarta(std::vector<std::vector<double>> tmpDane){
 	std::vector<std::vector<double>> wynik;
-	wynik=sortowanieElementow(wynik,liczSrodekCiezkosci(wynik));
+	wynik=sortowanieElementow(wynik,liczSrodekCiezkosci(tmpDane));
 	bool stop = true;
-	wynik.push_back(tmpDane[0]);
-	wynik.erase(wynik.begin());
+	std::vector<bool> sprCzyOdwiedzony(tmpDane.size()-1,false);
+	
+	while(std::find(sprCzyOdwiedzony.begin(),sprCzyOdwiedzony.end(),false) != sprCzyOdwiedzony.end())
+	{
+		if (wynik.empty())
+		{
+			wynik.push_back(tmpDane[0]);
+			tmpDane.erase(tmpDane.begin());
+			sprCzyOdwiedzony.erase(sprCzyOdwiedzony.begin());
+			continue;
+		}
 
-	/*while(stop){
-		
-	}*/
+		for (int i = 0; i < tmpDane.size(); ++i)
+		{
+			double aktualnaOdleglosc = 0.0; 
+			int indexNajblizszegoElementu = 0;
+			for (int j = 0; j < wynik.size(); ++j)
+			{
+				double obliczonaOdleglosc = odlegloscPomiedzyDwomaPunktami(tmpDane[i],wynik[j]);
+				if (aktualnaOdleglosc == 0.0)
+				{
+					aktualnaOdleglosc = obliczonaOdleglosc;
+				}
+				else if(aktualnaOdleglosc > obliczonaOdleglosc)
+				{
+					aktualnaOdleglosc = obliczonaOdleglosc;
+					indexNajblizszegoElementu = j;
+				}
+			}
+
+			if(wynik[indexNajblizszegoElementu][0] == tmpDane[i][0])
+			{
+				sprCzyOdwiedzony[i]=true;
+			}
+			else
+			{
+				wynik.push_back(tmpDane[i]);
+				tmpDane.erase(tmpDane.begin()+i);
+			}
+		}
+	}
 
 	return wynik;
 }
