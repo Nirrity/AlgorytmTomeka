@@ -11,8 +11,10 @@ void wyswietlDane(std::vector<std::vector<double>>& tempDane);
 std::vector<std::vector<double>> algorytmHarta(
 		std::vector<std::vector<double>> tmpDane);
 double odlegloscPomiedzyDwomaPunktami(std::vector<double>& pierwszyPunkt,
-	std::vector<double>& drugiPunkt);
-
+		std::vector<double>& drugiPunkt);
+std::vector<double> liczSrodekCiezkosci(std::vector<std::vector<double>> tmpDane);
+std::vector<std::vector<double>> sortowanieElementow(std::vector<std::vector<double>> tmpDane,
+		std::vector<double> srodek);
 
 int main()
 {
@@ -26,7 +28,7 @@ int main()
 
 	//wyswietlDane(dane_wejsciowe);
 	dane_wyjsciowe = algorytmHarta(dane_wejsciowe);
-	wyswietlDane(dane_wyjsciowe);
+	//wyswietlDane(dane_wyjsciowe);
 	std::cout<<"\n";
 	std::cout<<"Liczba znalezionych probek: "<<dane_wyjsciowe.size()<<std::endl;
 
@@ -91,46 +93,47 @@ double odlegloscPomiedzyDwomaPunktami(std::vector<double>& pierwszyPunkt,
 }
 
 
-std::vector<std::vector<double>> algorytmHarta(
-	std::vector<std::vector<double>> tmpDane)
-{
-	std::vector<std::vector<double>> wynik;
-	int maxIloscProbek = tmpDane.size();
-	int iloscWylosowanychProbek = 0;
-	std::random_device rd;
-    std::mt19937 gen(rd());
+std::vector<double> liczSrodekCiezkosci(std::vector<std::vector<double>> tmpDane){
+	std::vector<double> wynik(tmpDane[0].size()-1,0);
+	int rozmiar = tmpDane.size();
 
-	while(iloscWylosowanychProbek <= maxIloscProbek) {
-		++iloscWylosowanychProbek;
-		int obecnyRozmiar = tmpDane.size();
-		std::uniform_int_distribution<> dist(0, obecnyRozmiar-1);
-		int wylosowanaProbka = dist(gen);
-		double aktualnaNajblizszaOdleglosc = 0.0;
-		int najblizszyIndex = 0;
-
-		for (int i = 0; i < obecnyRozmiar; ++i)
-		{
-			if(i == wylosowanaProbka)
-				continue;
-
-			double liczeNajblizszaOdleglosc = 
-					odlegloscPomiedzyDwomaPunktami(tmpDane[wylosowanaProbka],tmpDane[i]);
-		
-			if(aktualnaNajblizszaOdleglosc == 0.0){
-				aktualnaNajblizszaOdleglosc = liczeNajblizszaOdleglosc;
-				najblizszyIndex = i;
-			}
-			else if(liczeNajblizszaOdleglosc < aktualnaNajblizszaOdleglosc){
-				aktualnaNajblizszaOdleglosc = liczeNajblizszaOdleglosc;
-				najblizszyIndex = i;
-			}
+	for (int i = 1; i < tmpDane[0].size(); ++i){
+		for (int j = 0; j < rozmiar; ++j){
+		wynik[i] += tmpDane[j][i];
 		}
+		wynik[i] /= rozmiar;
+	}
+	return wynik;
+}
 
-		if(tmpDane[wylosowanaProbka][0] != tmpDane[najblizszyIndex][0]){
-			wynik.push_back(tmpDane[najblizszyIndex]);
-			tmpDane.erase(tmpDane.begin()+najblizszyIndex);
+
+std::vector<std::vector<double>> sortowanieElementow(std::vector<std::vector<double>> tmpDane,
+	std::vector<double> srodek){
+
+	for (int i = 0; i < tmpDane.size(); ++i)
+	{
+		for (int j = 0; j < tmpDane.size()-1; ++j)
+		{
+			if(odlegloscPomiedzyDwomaPunktami(tmpDane[j],srodek) > odlegloscPomiedzyDwomaPunktami(tmpDane[j+1],srodek)){
+				std::swap(tmpDane[j],tmpDane[j+1]);
+			}
 		}
 	}
+
+	return tmpDane;
+}
+
+
+std::vector<std::vector<double>> algorytmHarta(std::vector<std::vector<double>> tmpDane){
+	std::vector<std::vector<double>> wynik;
+	wynik=sortowanieElementow(wynik,liczSrodekCiezkosci(wynik));
+	bool stop = true;
+	wynik.push_back(tmpDane[0]);
+	wynik.erase(wynik.begin());
+
+	/*while(stop){
+		
+	}*/
 
 	return wynik;
 }
