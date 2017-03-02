@@ -16,34 +16,30 @@ std::vector<double> liczSrodekCiezkosci(std::vector<std::vector<double>> tmpDane
 std::vector<std::vector<double>> sortowanieElementow(std::vector<std::vector<double>> tmpDane,
 		std::vector<double> srodek);
 
-int main()
-{
+int main(){
 	std::vector<std::vector<double>> dane_wejsciowe;
 	std::vector<std::vector<double>> dane_wyjsciowe;
 
-	if (wczytajDaneZPliku(dane_wejsciowe,"Epj.txt"))
-	{
+	if (wczytajDaneZPliku(dane_wejsciowe,"Iris.txt")){
 		std::cout<<"Plik nie istnieje!"<<std::endl;
 	}
 
 	//wyswietlDane(dane_wejsciowe);
 	dane_wyjsciowe = algorytmHarta(dane_wejsciowe);
-	//wyswietlDane(dane_wyjsciowe);
+	wyswietlDane(dane_wyjsciowe);
 	std::cout<<"\n";
 	std::cout<<"Liczba znalezionych probek: "<<dane_wyjsciowe.size()<<std::endl;
-
+	
 	return 0;
 }
 
 
 bool wczytajDaneZPliku(std::vector<std::vector<double>>& tempDane, 
-		std::string nazwaPliku)
-{
+		std::string nazwaPliku){
 	std::ifstream input;
 	input.open(nazwaPliku);
 
-	if (!input.good())
-	{
+	if (!input.good()){
 		return true;
 	}
 
@@ -51,13 +47,11 @@ bool wczytajDaneZPliku(std::vector<std::vector<double>>& tempDane,
 	input>>liczbaKlas>>liczbaKolumn>>liczbaWierszy;
 	++liczbaKolumn;
 
-	for (int i = 0; i < liczbaWierszy; ++i)
-	{
+	for (int i = 0; i < liczbaWierszy; ++i){
 		std::vector<double> tmpVector;
 		tmpVector.resize(liczbaKolumn);
 		tempDane.push_back(tmpVector);
-		for (int j = 0; j < liczbaKolumn; ++j)
-		{
+		for (int j = 0; j < liczbaKolumn; ++j){
 			input>>tempDane[i][j];
 		}
 	}
@@ -67,12 +61,9 @@ bool wczytajDaneZPliku(std::vector<std::vector<double>>& tempDane,
 }
 
 
-void wyswietlDane(std::vector<std::vector<double>>& tempDane)
-{
-	for(auto& wiersze: tempDane)
-	{
-		for (auto& kolumny : wiersze)
-		{
+void wyswietlDane(std::vector<std::vector<double>>& tempDane){
+	for(auto& wiersze: tempDane){
+		for (auto& kolumny : wiersze){
 			std::cout<<kolumny<<"  ";
 		}
 		std::cout<<std::endl;
@@ -81,13 +72,11 @@ void wyswietlDane(std::vector<std::vector<double>>& tempDane)
 
 
 double odlegloscPomiedzyDwomaPunktami(std::vector<double>& pierwszyPunkt,
-	std::vector<double>& drugiPunkt)
-{
+	std::vector<double>& drugiPunkt){
 	int rozmiar = pierwszyPunkt.size();
 	double wynik = 0.0;
 
-	for (int i = 1; i < rozmiar; ++i)
-	{
+	for (int i = 1; i < rozmiar; ++i){
 		wynik += std::pow(pierwszyPunkt[i]-drugiPunkt[i], 2.0);
 	}
 
@@ -96,13 +85,11 @@ double odlegloscPomiedzyDwomaPunktami(std::vector<double>& pierwszyPunkt,
 
 
 std::vector<double> liczSrodekCiezkosci(std::vector<std::vector<double>> tmpDane){
-	std::vector<double> wynik(tmpDane[0].size()-1,0);
+	std::vector<double> wynik(tmpDane[0].size(),0);
 	int rozmiar = tmpDane.size();
 
-	for (int i = 1; i < tmpDane[0].size(); ++i)
-	{
-		for (int j = 0; j < rozmiar; ++j)
-		{
+	for (int i = 1; i < tmpDane[0].size(); ++i){
+		for (int j = 0; j < rozmiar; ++j){
 			wynik[i] += tmpDane[j][i];
 		}
 		wynik[i] /= rozmiar;
@@ -114,10 +101,8 @@ std::vector<double> liczSrodekCiezkosci(std::vector<std::vector<double>> tmpDane
 std::vector<std::vector<double>> sortowanieElementow(std::vector<std::vector<double>> tmpDane,
 	std::vector<double> srodek){
 
-	for (int i = 0; i < tmpDane.size(); ++i)
-	{
-		for (int j = 0; j < tmpDane.size()-1; ++j)
-		{
+	for (int i = 0; i < tmpDane.size(); ++i){
+		for (int j = 0; j < tmpDane.size()-1; ++j){
 			if(odlegloscPomiedzyDwomaPunktami(tmpDane[j],srodek) > odlegloscPomiedzyDwomaPunktami(tmpDane[j+1],srodek)){
 				std::swap(tmpDane[j],tmpDane[j+1]);
 			}
@@ -130,46 +115,61 @@ std::vector<std::vector<double>> sortowanieElementow(std::vector<std::vector<dou
 
 std::vector<std::vector<double>> algorytmHarta(std::vector<std::vector<double>> tmpDane){
 	std::vector<std::vector<double>> wynik;
-	wynik=sortowanieElementow(wynik,liczSrodekCiezkosci(tmpDane));
+	tmpDane=sortowanieElementow(tmpDane,liczSrodekCiezkosci(tmpDane));
 	bool stop = true;
-	std::vector<bool> sprCzyOdwiedzony(tmpDane.size()-1,false);
+	std::vector<bool> sprCzyOdwiedzony(tmpDane.size(),false);
 	
-	while(std::find(sprCzyOdwiedzony.begin(),sprCzyOdwiedzony.end(),false) != sprCzyOdwiedzony.end())
-	{
-		if (wynik.empty())
-		{
+	while(std::find(sprCzyOdwiedzony.begin(),sprCzyOdwiedzony.end(),false) != sprCzyOdwiedzony.end()){
+		if (wynik.empty()){
 			wynik.push_back(tmpDane[0]);
 			tmpDane.erase(tmpDane.begin());
 			sprCzyOdwiedzony.erase(sprCzyOdwiedzony.begin());
 			continue;
 		}
 
-		for (int i = 0; i < tmpDane.size(); ++i)
-		{
+		sprCzyOdwiedzony.clear();
+		sprCzyOdwiedzony.resize(tmpDane.size(),false);
+
+		for (int i = 0; i < tmpDane.size(); ++i){
 			double aktualnaOdleglosc = 0.0; 
 			int indexNajblizszegoElementu = 0;
-			for (int j = 0; j < wynik.size(); ++j)
-			{
+			for (int j = 0; j < wynik.size(); ++j){
 				double obliczonaOdleglosc = odlegloscPomiedzyDwomaPunktami(tmpDane[i],wynik[j]);
-				if (aktualnaOdleglosc == 0.0)
-				{
+				if (aktualnaOdleglosc == 0.0){
 					aktualnaOdleglosc = obliczonaOdleglosc;
 				}
-				else if(aktualnaOdleglosc > obliczonaOdleglosc)
-				{
+				else if(aktualnaOdleglosc > obliczonaOdleglosc){
 					aktualnaOdleglosc = obliczonaOdleglosc;
 					indexNajblizszegoElementu = j;
 				}
 			}
 
-			if(wynik[indexNajblizszegoElementu][0] == tmpDane[i][0])
-			{
+			if(wynik[indexNajblizszegoElementu][0] == tmpDane[i][0]){
 				sprCzyOdwiedzony[i]=true;
 			}
-			else
-			{
+			else{
 				wynik.push_back(tmpDane[i]);
 				tmpDane.erase(tmpDane.begin()+i);
+				sprCzyOdwiedzony.erase(sprCzyOdwiedzony.begin()+i);
+			}
+
+			for (int j = 0; j < wynik.size(); ++j){
+				if(sprCzyOdwiedzony[i]){
+					double obliczonaOdleglosc = odlegloscPomiedzyDwomaPunktami(tmpDane[i],wynik[j]);
+					if(aktualnaOdleglosc == 0.0){
+						aktualnaOdleglosc = obliczonaOdleglosc;
+					}
+					else if(aktualnaOdleglosc > obliczonaOdleglosc){
+						aktualnaOdleglosc = obliczonaOdleglosc;
+						indexNajblizszegoElementu = j;
+					}
+				}
+			}
+
+			if(wynik[indexNajblizszegoElementu][0] != tmpDane[i][0]){
+				wynik.push_back(tmpDane[i]);
+				tmpDane.erase(tmpDane.begin()+i);
+				sprCzyOdwiedzony.erase(sprCzyOdwiedzony.begin()+i);
 			}
 		}
 	}
