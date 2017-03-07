@@ -15,6 +15,10 @@ double odlegloscPomiedzyDwomaPunktami(std::vector<double>& pierwszyPunkt,
 std::vector<double> liczSrodekCiezkosci(std::vector<std::vector<double>> tmpDane);
 std::vector<std::vector<double>> sortowanieElementow(std::vector<std::vector<double>> tmpDane,
 		std::vector<double> srodek);
+std::vector<double> liczSrodekPomiedzyDwomaPunktami(std::vector<double> punkt1, 
+		std::vector<double> punkt2);
+std::vector<std::vector<double>> algorytmTomeka(std::vector<std::vector<double>> tmpDane);
+
 
 int main(){
 	std::vector<std::vector<double>> dane_wejsciowe;
@@ -135,10 +139,7 @@ std::vector<std::vector<double>> algorytmHarta(std::vector<std::vector<double>> 
 			int indexNajblizszegoElementu = 0;
 			for (int j = 0; j < wynik.size(); ++j){
 				double obliczonaOdleglosc = odlegloscPomiedzyDwomaPunktami(tmpDane[i],wynik[j]);
-				if (aktualnaOdleglosc == 0.0){
-					aktualnaOdleglosc = obliczonaOdleglosc;
-				}
-				else if(aktualnaOdleglosc > obliczonaOdleglosc){
+				if(aktualnaOdleglosc > obliczonaOdleglosc || aktualnaOdleglosc == 0.0){
 					aktualnaOdleglosc = obliczonaOdleglosc;
 					indexNajblizszegoElementu = j;
 				}
@@ -152,14 +153,15 @@ std::vector<std::vector<double>> algorytmHarta(std::vector<std::vector<double>> 
 				tmpDane.erase(tmpDane.begin()+i);
 				sprCzyOdwiedzony.erase(sprCzyOdwiedzony.begin()+i);
 			}
+		}
 
+		for (int i = 0; i < tmpDane.size(); ++i){
+			double aktualnaOdleglosc = 0.0;
+			int indexNajblizszegoElementu = 0;
 			for (int j = 0; j < wynik.size(); ++j){
 				if(sprCzyOdwiedzony[i]){
 					double obliczonaOdleglosc = odlegloscPomiedzyDwomaPunktami(tmpDane[i],wynik[j]);
-					if(aktualnaOdleglosc == 0.0){
-						aktualnaOdleglosc = obliczonaOdleglosc;
-					}
-					else if(aktualnaOdleglosc > obliczonaOdleglosc){
+					if(aktualnaOdleglosc > obliczonaOdleglosc || aktualnaOdleglosc == 0.0){
 						aktualnaOdleglosc = obliczonaOdleglosc;
 						indexNajblizszegoElementu = j;
 					}
@@ -173,6 +175,25 @@ std::vector<std::vector<double>> algorytmHarta(std::vector<std::vector<double>> 
 			}
 		}
 	}
+
+	return wynik;
+}
+
+
+std::vector<double> liczSrodekPomiedzyDwomaPunktami(std::vector<double> punkt1, 
+		std::vector<double> punkt2){
+	std::vector<double> wynik(punkt1.size(),0);
+
+	for (int i = 1; i < punkt1.size(); ++i){
+		wynik[i] = (punkt1[i]+punkt2[i])/2.0;
+	}
+
+	return wynik;
+}
+
+
+std::vector<std::vector<double>> algorytmTomeka(std::vector<std::vector<double>> tmpDane){
+	std::vector<std::vector<double>> wynik;
 
 	return wynik;
 }
